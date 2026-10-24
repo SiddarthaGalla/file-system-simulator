@@ -1,0 +1,258 @@
+/**
+ * ============================================================================
+ * DESIGN SYSTEM TOKENS: File-System Simulator
+ * Primary Theme: Midnight Navy (Dark)
+ * Secondary Theme: Refined Light
+ * ============================================================================
+ */
+
+:root,
+[data-theme="dark"] {
+  /* Surface & Background Hierarchy */
+  --bg-app: #0B1120;
+  --bg-card: #151F32;
+  --bg-surface: #1C2940;
+  --bg-surface-hover: #23334F;
+  --bg-surface-active: #2A3D5D;
+
+  /* Borders & Dividers */
+  --border-subtle: #1C2739;
+  --border-default: #263449;
+  --border-hover: #384A66;
+  --border-active: #3B82F6;
+
+  /* Typography Colors */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-on-primary: #FFFFFF;
+
+  /* Primary Accent: Electric Blue */
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-primary-subtle: rgba(59, 130, 246, 0.15);
+  --color-primary-border: rgba(59, 130, 246, 0.35);
+
+  /* Secondary Accent: Restrained Violet */
+  --color-secondary: #A78BFA;
+  --color-secondary-hover: #8B5CF6;
+  --color-secondary-subtle: rgba(167, 139, 250, 0.15);
+  --color-secondary-border: rgba(167, 139, 250, 0.35);
+
+  /* Semantic Feedback & Status */
+  --color-success: #22C55E;
+  --color-success-hover: #16A34A;
+  --color-success-subtle: rgba(34, 197, 94, 0.15);
+  --color-success-border: rgba(34, 197, 94, 0.35);
+
+  --color-warning: #F59E0B;
+  --color-warning-hover: #D97706;
+  --color-warning-subtle: rgba(245, 158, 11, 0.15);
+  --color-warning-border: rgba(245, 158, 11, 0.35);
+
+  --color-error: #EF4444;
+  --color-error-hover: #DC2626;
+  --color-error-subtle: rgba(239, 68, 68, 0.15);
+  --color-error-border: rgba(239, 68, 68, 0.35);
+
+  /* =========================================================================
+   * Signature Disk Block Visualization Colors (Dark Mode)
+   * ========================================================================= */
+  /* Free Blocks: Neutral slate */
+  --block-free-bg: #131B2A;
+  --block-free-border: #222E42;
+  --block-free-text: #64748B;
+  --block-free-hover: #1A2538;
+
+  /* File A: Blue */
+  --block-file-a-bg: #1E3A8A;
+  --block-file-a-border: #3B82F6;
+  --block-file-a-text: #EFF6FF;
+  --block-file-a-glow: rgba(59, 130, 246, 0.4);
+
+  /* File B: Green */
+  --block-file-b-bg: #14532D;
+  --block-file-b-border: #22C55E;
+  --block-file-b-text: #F0FDF4;
+  --block-file-b-glow: rgba(34, 197, 94, 0.4);
+
+  /* File C: Violet */
+  --block-file-c-bg: #4C1D95;
+  --block-file-c-border: #A78BFA;
+  --block-file-c-text: #FAF5FF;
+  --block-file-c-glow: rgba(167, 139, 250, 0.4);
+
+  /* Metadata (Inode, FAT table, Index block): Amber */
+  --block-meta-bg: #78350F;
+  --block-meta-border: #F59E0B;
+  --block-meta-text: #FFFBEB;
+  --block-meta-glow: rgba(245, 158, 11, 0.4);
+
+  /* Selected Block & R/W Head */
+  --block-selected-ring: #60A5FA;
+  --block-head-indicator: #F43F5E;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.55), 0 4px 6px -4px rgba(0, 0, 0, 0.45);
+  --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.3);
+
+  /* Code & Terminal Surfaces */
+  --terminal-bg: #070B14;
+  --terminal-header: #0F172A;
+  --terminal-text: #E2E8F0;
+  --terminal-prompt: #38BDF8;
+}
+
+/* ===========================================================================
+ * Light Theme
+ * =========================================================================== */
+[data-theme="light"] {
+  /* Surface & Background Hierarchy */
+  --bg-app: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-surface: #F1F5F9;
+  --bg-surface-hover: #E2E8F0;
+  --bg-surface-active: #CBD5E1;
+
+  /* Borders & Dividers */
+  --border-subtle: #F1F5F9;
+  --border-default: #E2E8F0;
+  --border-hover: #CBD5E1;
+  --border-active: #2563EB;
+
+  /* Typography Colors */
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --text-on-primary: #FFFFFF;
+
+  /* Primary Accent: Crisp Royal Blue */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-subtle: rgba(37, 99, 235, 0.08);
+  --color-primary-border: rgba(37, 99, 235, 0.25);
+
+  /* Secondary Accent: Refined Purple */
+  --color-secondary: #7C3AED;
+  --color-secondary-hover: #6D28D9;
+  --color-secondary-subtle: rgba(124, 58, 237, 0.08);
+  --color-secondary-border: rgba(124, 58, 237, 0.25);
+
+  /* Semantic Feedback & Status */
+  --color-success: #16A34A;
+  --color-success-hover: #15803D;
+  --color-success-subtle: rgba(22, 163, 74, 0.08);
+  --color-success-border: rgba(22, 163, 74, 0.25);
+
+  --color-warning: #D97706;
+  --color-warning-hover: #B45309;
+  --color-warning-subtle: rgba(217, 119, 6, 0.08);
+  --color-warning-border: rgba(217, 119, 6, 0.25);
+
+  --color-error: #DC2626;
+  --color-error-hover: #B91C1C;
+  --color-error-subtle: rgba(220, 38, 38, 0.08);
+  --color-error-border: rgba(220, 38, 38, 0.25);
+
+  /* =========================================================================
+   * Signature Disk Block Visualization Colors (Light Mode)
+   * ========================================================================= */
+  /* Free Blocks: Clean slate */
+  --block-free-bg: #F8FAFC;
+  --block-free-border: #E2E8F0;
+  --block-free-text: #94A3B8;
+  --block-free-hover: #EDF2F7;
+
+  /* File A: Blue */
+  --block-file-a-bg: #DBEAFE;
+  --block-file-a-border: #93C5FD;
+  --block-file-a-text: #1E40AF;
+  --block-file-a-glow: rgba(37, 99, 235, 0.2);
+
+  /* File B: Green */
+  --block-file-b-bg: #DCFCE7;
+  --block-file-b-border: #86EFAC;
+  --block-file-b-text: #166534;
+  --block-file-b-glow: rgba(22, 163, 74, 0.2);
+
+  /* File C: Violet */
+  --block-file-c-bg: #F3E8FF;
+  --block-file-c-border: #D8B4FE;
+  --block-file-c-text: #6B21A8;
+  --block-file-c-glow: rgba(124, 58, 237, 0.2);
+
+  /* Metadata: Amber */
+  --block-meta-bg: #FEF3C7;
+  --block-meta-border: #FCD34D;
+  --block-meta-text: #92400E;
+  --block-meta-glow: rgba(217, 119, 6, 0.2);
+
+  /* Selected Block & R/W Head */
+  --block-selected-ring: #2563EB;
+  --block-head-indicator: #E11D48;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+
+  /* Code & Terminal Surfaces */
+  --terminal-bg: #0F172A;
+  --terminal-header: #1E293B;
+  --terminal-text: #F1F5F9;
+  --terminal-prompt: #38BDF8;
+}
+
+/* ===========================================================================
+ * Shared Scale Tokens (Theme Agnostic)
+ * =========================================================================== */
+:root {
+  /* Typography Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Typographic Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.8125rem;  /* 13px */
+  --text-base: 0.875rem; /* 14px */
+  --text-md: 1rem;       /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+
+  /* Spacing Scale */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem;  /* 24px */
+  --space-8: 2rem;    /* 32px */
+  --space-10: 2.5rem; /* 40px */
+
+  /* Border Radii (Disciplined, non-pill aesthetic) */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
