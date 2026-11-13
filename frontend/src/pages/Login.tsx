@@ -1,0 +1,108 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { Button } from '../components/ui/Button';
+import { HardDrive } from 'lucide-react';
+
+export const Login: React.FC = () => {
+  const { login } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState('demo_admin');
+  const [password, setPassword] = useState('password123');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username || !password) {
+      toast.error('Please enter both username and password');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await login({ username, password });
+      toast.success('Welcome back!');
+      navigate('/');
+    } catch (err: any) {
+      toast.error(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoFill = () => {
+    setUsername('os_researcher');
+    setPassword('research123');
+  };
+
+  return (
+    <div className="min-h-screen bg-canvas-light flex flex-col justify-center items-center p-4 selection:bg-lime">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-subtle-border p-8 shadow-sm">
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="w-12 h-12 rounded-2xl bg-ink-primary flex items-center justify-center text-white mb-3 shadow-sm">
+            <HardDrive className="w-6 h-6 text-lime" />
+          </div>
+          <h2 className="text-xl font-bold text-ink-primary">Sign in to AegisStorage</h2>
+          <p className="text-xs text-ink-secondary mt-1">
+            Intelligent File Storage & Allocation Simulator
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-ink-primary mb-1">
+              Username or Email
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="e.g. researcher"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-subtle-border text-sm focus:outline-none focus:border-ink-primary transition-colors bg-canvas-light/30"
+              required
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-medium text-ink-primary">Password</label>
+            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-subtle-border text-sm focus:outline-none focus:border-ink-primary transition-colors bg-canvas-light/30"
+              required
+            />
+          </div>
+
+          <Button type="submit" variant="primary" loading={loading} className="w-full">
+            Sign In
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={handleDemoFill}
+            className="w-full text-xs text-ink-secondary"
+          >
+            Fill Demo Credentials
+          </Button>
+        </form>
+
+        <div className="mt-6 pt-6 border-t border-subtle-border text-center text-xs text-ink-secondary">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-semibold text-ink-primary hover:underline">
+            Register now
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+

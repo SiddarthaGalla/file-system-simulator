@@ -1,189 +1,168 @@
-# File-System Simulator
+# Intelligent File Storage & Allocation Management System for Reducing Fragmentation in Cloud Storage Environments
 
-An interactive web-based simulator designed to visualize and benchmark secondary storage allocation methods, disk fragmentation, I/O access times, and space utilization.
-
-Built as an Operating Systems capstone project by [Siddartha Galla](https://github.com/SiddarthaGalla).
-
----
-
-## Why I Built This
-
-When studying operating systems from textbooks like Silberschatz (*Operating System Concepts*) or Remzi's *OSTEP*, concepts like contiguous vs. indexed allocation or internal vs. external fragmentation are explained with static 2D diagrams. In practice, the real trade-offs only become obvious when you actually run a dynamic workload:
-
-- You allocate and delete 30 files, and suddenly Contiguous allocation fails with `ENOSPC` even though 40% of the disk is technically free (external fragmentation).
-- You try to seek to byte offset 45,000 in a Linked allocation scheme and realize the simulated disk head has to make dozens of block hops just to reach the data.
-- You look at Indexed or Inode allocation and notice how much storage is actually eaten up by index blocks and pointer tables for small files.
-
-I built this simulator to make those trade-offs interactive, visual, and quantifiable. It lets you experiment with different allocation methods in real time, run automated stress workloads, and compare them side by side under the exact same sequence of file operations.
+[![Operating Systems Capstone](https://img.shields.io/badge/Project-Operating_Systems_Capstone-181818?style=flat-square)](#)
+[![Python](https://img.shields.io/badge/Backend-Python_Flask_3-8FED0E?style=flat-square&logo=python&logoColor=181818)](#)
+[![React](https://img.shields.io/badge/Frontend-React_19_+_TypeScript-181818?style=flat-square&logo=react)](#)
+[![Tailwind CSS](https://img.shields.io/badge/Theme-Ronas_IT_Minimalist_SaaS-8FED0E?style=flat-square&logo=tailwindcss&logoColor=181818)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-181818?style=flat-square)](#)
 
 ---
 
-## Core Allocation Methods Simulated
+## 1. Project Overview
 
-| Strategy | Allocation Logic | Random Access Cost | External Fragmentation | Dynamic Resizing | Notes & Trade-offs |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Contiguous Allocation** | Finds a consecutive run of $N$ free blocks using **First-Fit**, **Best-Fit**, or **Worst-Fit**. | $O(1)$ — single direct offset calculation: $\text{Base} + k$. | **High** — Free blocks get stranded in gaps between files. | Difficult — requires contiguous free space at the tail or full file relocation. | Excellent sequential read performance, but suffers badly under file churn. |
-| **Linked Allocation** | Each block stores data plus a trailing pointer to the next block address. | $O(k)$ — must sequentially traverse $k$ disk blocks. | **Zero** — any free block anywhere on disk can be used. | Very simple — grab any free block and append to pointer chain. | Eliminates external fragmentation, but random access is slow and reliable pointer integrity is critical. |
-| **File Allocation Table (FAT)** | Centralizes block-to-block pointers into a single lookup table kept in memory. | $O(1)$ disk seek — table chain traversed in RAM, only 1 actual disk read. | **Zero** — any free block is utilized. | Easy — update FAT table entry in memory and disk cache. | Modeled after MS-DOS FAT12/16/32. High table memory overhead for large disks. |
-| **Single-Level Indexed** | Each file has a dedicated index block containing an array of direct block pointers. | $O(1)$ — 1 read to the index block, 1 read to the data block. | **Zero** — blocks can be scattered across the disk. | Limited by index block capacity ($\text{BlockSize} / \text{PointerSize}$). | Great direct access, but wastes an entire block on metadata even for 1-byte files. |
-| **UNIX Inode (Multi-Level)** | Hierarchical structure with direct pointers (0–9), a single indirect pointer, and a double indirect pointer. | $O(1)$ direct; $O(2)$ single indirect; $O(3)$ double indirect. | **Zero** — completely non-contiguous. | Flexible — handles small files without overhead and scales to large files. | Modeled after classic UNIX / ext file systems. |
+A professional, full-stack, enterprise-grade cloud file system simulator built as an Operating Systems Capstone Project. It models virtual disk allocation, computes mathematical fragmentation metrics (file fragmentation and external free-space fragmentation), compares classical OS allocation schemes (**Contiguous**, **Linked**, and **Indexed** with **First Fit** and **Best Fit** placement strategies), and optimizes sector allocation using an evolutionary **Genetic Algorithm (GA)** engine.
+
+### Visual Design Reference
+Crafted following the minimalist SaaS design philosophy of the [Ronas IT Dribbble Design](https://dribbble.com/shots/25708347-Delivery-Web-App-Design):
+- Off-white canvas (`#ECECEB`) with white secondary card surfaces (`#FFFFFF`).
+- High-contrast charcoal text (`#181818`) with muted subtitle accents (`#5B5B59`).
+- Energetic lime green (`#8FED0E`) used sparingly for primary actions, active indicators, and optimal status badges.
+- Large rounded cards (`rounded-3xl`), subtle hairline borders (`#E1E1DE`), balanced whitespace, and clean Lucide iconography.
 
 ---
 
-## Key Features
+## 2. Core Modules & Technical Architecture
 
-### 1. Interactive 2D Disk Block Grid
-- Visual grid representing physical disk blocks (configurable from 64 up to 2,048 blocks, with block sizes from 512 B to 8 KB).
-- Color-coded by file identity and block type (user data, Inodes, index blocks, FAT table, superblock, free space).
-- Hover inspection: Click or hover any block to inspect its physical sector address, owning file, logical block offset, next pointer, and internal slack bytes.
-- Step-by-step playback: Slow down operations to watch First-Fit or Best-Fit scan the disk block-by-block.
-
-### 2. Multi-Algorithm Arena (Side-by-Side Comparison)
-- Run identical workloads across multiple allocation strategies simultaneously.
-- Feeds the exact same sequence of file operations (creates, deletes, appends, random seeks) into Contiguous, Linked, FAT, Indexed, and Inode engines.
-- Real-time comparison delta table highlighting winners and losers for fragmentation, metadata overhead, and seek counts.
-
-### 3. Disk Defragmentation & Compaction Lab
-- Visualizes online disk defragmentation for Contiguous allocation.
-- Watch scattered files migrate toward block 0 in real time to coalesce fragmented free space into a single contiguous pool.
-- Tracks metrics: total blocks moved, read/write cycles incurred, and simulated defrag time.
-
-### 4. Real-Time Telemetry & Charts
-- **Fragmentation Progression (Line Chart)**: Tracks external fragmentation percentage as churn increases.
-- **I/O Access Latency (Bar Chart)**: Compares seek distance and simulated milliseconds for sequential reads vs. random offset reads.
-- **Storage Composition (Donut Chart)**: Breaks down total disk usage into user payload vs. internal slack waste vs. allocation metadata.
-
-### 5. OS Terminal / CLI Mode
-An integrated monospace terminal supporting standard UNIX-style commands for users who prefer CLI workflows:
-```bash
-# Initialize a disk with 256 blocks of 4KB each using Inode allocation
-mkfs -t inode -s 256 -b 4096
-
-# Create files
-touch report.pdf 14KB
-touch database.db 64KB
-
-# Read sequential or seek to an offset
-read report.pdf
-read database.db --offset 16384
-
-# Inspect block layout and inode stats
-stat database.db
-df -h
-ls -l
-
-# Delete and trigger defragmentation
-rm report.pdf
-defrag
 ```
-
-### 6. Workload Generators
-Includes pre-configured real-world scenario presets:
-- **High Churn (Stress Test)**: Rapidly allocates and removes variable-sized files to induce extreme external fragmentation.
-- **Web Server Logs**: Append-heavy workload with continuous small writes.
-- **OLTP Database**: Fixed-size files with frequent random offset reads and writes.
-- **Multimedia Streaming**: Large sequential files to test uninterrupted block throughput.
-
----
-
-## Metrics & Mathematical Models
-
-### Internal Fragmentation ($IF$)
-Slack bytes wasted in the final block of a file:
-$$N = \lceil \frac{S}{B} \rceil, \quad IF = (N \times B) - S \quad (0 \le IF < B)$$
-$$\% IF = \frac{\sum IF_i}{\sum (N_i \times B)} \times 100$$
-*(Where $S$ is file size in bytes, and $B$ is block size).*
-
-### External Fragmentation ($EF$)
-Occurs in Contiguous allocation when total free space $F_{total} \ge S$, but no single contiguous chunk $C_{max} \ge S$:
-$$EF\% = \left( 1 - \frac{C_{max}}{F_{total}} \right) \times 100$$
-
-### Access Latency Simulation ($T_{access}$)
-Simulates physical disk head movement across track/block numbers:
-$$T_{seek} = \text{base\_seek} + (\Delta \text{tracks} \times \text{head\_travel\_rate})$$
-- **Contiguous**: Direct address calculation ($1$ disk seek).
-- **Linked**: Traversal requires $k$ disk reads to reach the $k$-th block.
-- **FAT**: In-memory pointer traversal ($0$ disk seeks for table lookup, $1$ disk seek to fetch target block).
-- **Indexed / Inode**: $1$ seek to fetch index/inode block $+ 1$ seek to read target block (or $2$ for indirect blocks).
-
----
-
-## Tech Stack & Architecture
-
-- **Frontend Framework**: React 19 + TypeScript (Vite)
-- **Styling**: Vanilla CSS with custom properties (CSS design tokens, responsive grid, glassmorphic dark theme)
-- **Visuals & Charts**: HTML5 Canvas for dense block grids + Chart.js for telemetry graphs
-- **Icons**: Lucide Icons
-- **Simulation Core**: Pure TypeScript engine, decoupled from React state for deterministic and benchmark-grade simulation runs
-
-```text
 file-system-simulator/
-├── src/
-│   ├── core/                  # Pure OS simulation engine (no UI dependencies)
-│   │   ├── Disk.ts            # Simulated physical block array & R/W head
-│   │   ├── types.ts           # Block, Inode, File, and Metric interfaces
-│   │   ├── allocators/        # Contiguous, Linked, FAT, Indexed, Inode
-│   │   ├── free-space/        # Bit Vector & Free List managers
-│   │   └── metrics/           # Fragmentation & latency calculators
-│   ├── components/            # UI Components
-│   │   ├── disk/              # 2D Grid, block tooltip, head animator
-│   │   ├── comparison/        # Multi-disk side-by-side view
-│   │   ├── analytics/         # Charts (fragmentation, seeks, capacity)
-│   │   ├── defrag/            # Visual defragmentation animator
-│   │   └── terminal/          # OS CLI shell emulator
-│   ├── presets/               # Benchmark workload definitions
-│   ├── styles/                # Vanilla CSS tokens and component stylesheets
-│   ├── App.tsx                # Main view coordinator
-│   └── main.tsx               # Bootstrap
-├── REQUIREMENTS.md            # Detailed Software Requirements Specification (SRS)
-├── README.md                  # Project documentation
-└── package.json
+├── backend/
+│   ├── api/                     # REST Blueprints (auth, storage, files, allocation, GA, defrag, analytics, reports)
+│   ├── engine/                  # Core Algorithmic Engines
+│   │   ├── allocation_manager.py       # Contiguous, Linked, Indexed, First Fit, Best Fit
+│   │   ├── fragmentation_analyzer.py   # Mathematical fragmentation & slack calculator
+│   │   ├── genetic_algorithm.py        # Real working Genetic Algorithm with elitism & order crossover
+│   │   ├── defragmenter.py             # Atomic transactional defragmentation engine
+│   │   ├── virtual_disk.py             # Low-level virtual sector management
+│   │   └── report_generator.py         # ReportLab PDF generator & CSV exports
+│   ├── models/                  # SQLAlchemy ORM Models (User, StorageDevice, VirtualFile, StorageBlock, etc.)
+│   ├── tests/                   # Automated unit & end-to-end integration test suite
+│   ├── uploads/                 # Safe physical file storage sandbox
+│   ├── app.py                   # Flask Application Factory & entrypoint
+│   ├── config.py                # Environment configuration
+│   └── requirements.txt         # Python dependencies
+└── frontend/
+    ├── src/
+    │   ├── components/          # Reusable UI cards, modals, buttons, badges, storage block grid
+    │   ├── context/             # AuthContext, StorageContext, ToastContext
+    │   ├── pages/               # 12 complete full-featured views
+    │   ├── services/            # Typed Fetch API client
+    │   ├── types/               # TypeScript interfaces
+    │   ├── App.tsx              # Router & Protected route configuration
+    │   └── main.tsx
+    ├── tailwind.config.js       # Tailored color palette & spacing
+    └── package.json
 ```
 
 ---
 
-## Getting Started
+## 3. Features Implemented
+
+1. **Authentication Module**: Secure JWT token authentication, password hashing with Werkzeug, protected routing, and user profiles.
+2. **Dashboard Module**: Dynamic storage statistics (total capacity, used, available, fragmentation %, wasted slack storage), donut capacity charts, and historical trend lines.
+3. **File Management Module**: Single/multiple drag-and-drop file upload, file downloads, deletion with automatic block recycling, folder hierarchy, and search filtering.
+4. **Virtual Storage Device Module**: Create virtual disks, configure capacity (MB) and block size (KB), calculate total sector count, switch active disks, and reset to clean state.
+5. **Interactive Storage Map**: Live responsive 100-block sector grid color-coded by file, block inspector with logical block indexes and pointer chains, plus **Side-by-Side Current vs. GA-Optimized layout comparison**.
+6. **Fragmentation Analysis Module**: Single-click storage scanner computing **File Fragmentation Ratio**, **External Fragmentation %**, **Internal Slack Fragmentation (KB)**, and extents per file.
+7. **Allocation Algorithms Lab**: Interactive playground demonstrating **Contiguous Allocation** (First Fit / Best Fit), **Linked Allocation**, and **Indexed Allocation** (i-nodes) with real measured execution latency.
+8. **Genetic Algorithm Optimizer**: Real working Python GA engine featuring multiset chromosome permutations, tournament selection, Order Crossover (OX), block coalescing mutations, elitism, and generation-wise convergence charts.
+9. **Dynamic Defragmentation Engine**: Manual file-targeted and automatic threshold-based defragmentation with transactional database rollback safety.
+10. **Performance Monitor**: Empirical benchmark charts measuring algorithm execution latency (ms) vs. simulated physical disk head read seek latency.
+11. **Comparison Analytics**: Side-by-side comparative matrix of all 6 methods identifying explicit metric winners (Fastest Allocation, Lowest Read Seek, Highest Utilization, Best Overall Balance).
+12. **Reports & Audit Trail**: Immutable ledger of all operations, plus 1-click **ReportLab PDF Report Export** and **CSV Data Dumps**.
+13. **One-Click Demo Data Button**: Instantly seeds a realistic fragmented cloud storage scenario with preloaded files and non-contiguous free spaces for immediate demonstrations.
+
+---
+
+## 4. Getting Started (Windows Setup Guide)
 
 ### Prerequisites
-- Node.js (v18.0.0 or higher)
-- npm or yarn
-
-### Installation & Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/SiddarthaGalla/file-system-simulator.git
-   cd file-system-simulator
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start the local development server**:
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your browser.
-
-4. **Build for production**:
-   ```bash
-   npm run build
-   ```
+- **Python 3.10+** (Tested on Python 3.14)
+- **Node.js v18+** (Tested on Node.js v24)
+- **VS Code** or terminal of your choice
 
 ---
 
-## Educational Use & Capstone Evaluation
+### Step 1: Install Dependencies
 
-This project was built to satisfy the requirements of an undergraduate Operating Systems capstone. Evaluators can:
-1. Validate theoretical claims made in lecture notes against empirical simulation data.
-2. Observe edge cases like file allocation failures under severe external fragmentation.
-3. Compare space overhead ratios (metadata vs. payload) across different block sizes.
-4. Export simulation benchmark runs as JSON reports for lab submissions.
+#### Backend Dependencies:
+Open a PowerShell terminal in the project root:
+```powershell
+cd backend
+pip install -r requirements.txt
+```
+
+#### Frontend Dependencies:
+```powershell
+cd ../frontend
+npm install
+```
 
 ---
 
-## License
+### Step 2: Running the Application
 
-This project is licensed under the [MIT License](LICENSE).
+To run the application, open **two separate terminal windows** in VS Code:
+
+#### Terminal 1 — Start the Flask Backend (Port 5000):
+```powershell
+cd "s:\Personal\My Projects\file-system-simulator\backend"
+python app.py
+```
+> The backend server will start at `http://127.0.0.1:5000` with the SQLite database initialized at `backend/storage_simulator.db`.
+
+#### Terminal 2 — Start the React Frontend (Port 5173):
+```powershell
+cd "s:\Personal\My Projects\file-system-simulator\frontend"
+npm run dev
+```
+> The frontend development server will launch at `http://localhost:5173`. Open this URL in your web browser.
+
+---
+
+## 5. Instant Project Demonstration
+
+1. Navigate to `http://localhost:5173/login`.
+2. Click **"Fill Demo Credentials"** (or use username: `demo_admin`, password: `password123`) and click **Sign In** (or register a new researcher account).
+3. In the top navigation bar, click the **"DEMO DATA"** button with the lime badge.
+4. This instantly populates:
+   - A 100-block virtual disk (100 MB).
+   - 8 realistic uploaded files across folders (`Documents`, `Source Code`, `Media`).
+   - Strategic non-contiguous free spaces mimicking realistic cloud fragmentation.
+5. Click **"Storage Map"** in the sidebar to inspect the color-coded sectors and fragmented files.
+6. Click **"GA Optimization"**, select your desired population and generations, and click **"RUN OPTIMIZATION"**.
+7. Watch the live generation-by-generation fitness convergence chart, inspect the extent reductions, and click **"APPLY OPTIMIZED ALLOCATION"** to update the virtual disk!
+8. Click **"Reports & History"** and download the generated **PDF Report** or **CSV Export**.
+
+---
+
+## 6. Running Backend Unit & E2E Tests
+
+The backend includes a comprehensive automated test suite covering algorithm allocations, fragmentation mathematics, genetic algorithm invariants, and complete REST API workflows:
+
+```powershell
+cd backend
+python -m unittest discover -s tests
+```
+
+Expected output:
+```
+Ran 8 tests in ~8.8s
+OK
+```
+
+---
+
+## 7. Mathematical Formulations
+
+- **File Fragmentation Ratio ($R_{frag}$)**:
+  $$R_{frag} = \frac{\sum E_f - N_{files}}{\sum E_f} \times 100\%$$
+  where $E_f$ is the number of extents for file $f$, and $N_{files}$ is the count of files with active block allocations.
+
+- **External Fragmentation Percentage ($E_{ext}$)**:
+  $$E_{ext} = \left(1 - \frac{L_{free}}{T_{free}}\right) \times 100\%$$
+  where $L_{free}$ is the largest contiguous free extent and $T_{free}$ is the total number of free blocks on disk.
+
+- **Genetic Algorithm Multi-Objective Fitness ($F$)**:
+  $$F = w_1 \cdot (1 - \text{NormFrag}) + w_2 \cdot \left(\frac{L_{free}}{T_{free}}\right) - w_3 \cdot \left(\frac{B_{moved}}{B_{total}}\right)$$
+  where $w_1 = 0.55$, $w_2 = 0.30$, and $w_3 = 0.15$ (fully configurable in the UI).
+
