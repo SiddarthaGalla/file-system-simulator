@@ -8,6 +8,8 @@ from api.defragmentation import defragmentation_bp
 from api.analytics import analytics_bp
 from api.reports import reports_bp
 from api.demo import demo_bp
+from api.scheduling import scheduling_bp
+from api.workload import workload_bp
 
 def register_blueprints(app):
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -20,4 +22,6 @@ def register_blueprints(app):
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
     app.register_blueprint(reports_bp, url_prefix='/api/reports')
     app.register_blueprint(demo_bp, url_prefix='/api/demo')
+    app.register_blueprint(scheduling_bp, url_prefix='/api/scheduling')
+    app.register_blueprint(workload_bp, url_prefix='/api/workload')
 

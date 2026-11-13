@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Sparkles, LogOut, User as UserIcon, RotateCcw, Trash2 } from 'lucide-react';
+import {
+  Menu,
+  Sparkles,
+  LogOut,
+  User as UserIcon,
+  RotateCcw,
+  Trash2,
+  HardDrive,
+  Activity,
+  Play,
+  Server
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useStorage } from '../../context/StorageContext';
 import { useToast } from '../../context/ToastContext';
@@ -14,7 +25,7 @@ interface TopNavProps {
 
 export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
   const { user, logout } = useAuth();
-  const { activeDevice, refreshDevices } = useStorage();
+  const { activeDevice, devices, selectActiveDevice, refreshDevices } = useStorage();
   const toast = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,6 +33,11 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
   const [seeding, setSeeding] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [clearModalOpen, setClearModalOpen] = useState(false);
+
+  // Workload Modal State
+  const [workloadModalOpen, setWorkloadModalOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState('web_server');
+  const [runningWorkload, setRunningWorkload] = useState(false);
 
   // Map route to human title
   const routeTitles: Record<string, string> = {
@@ -67,12 +83,30 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
       await refreshDevices();
       toast.success('All demo files removed! Storage is 100% free and ready for your files.');
       setClearModalOpen(false);
-      // Navigate to file management so user can immediately upload
       navigate('/files');
     } catch (err: any) {
       toast.error(err.message || 'Failed to clear storage');
     } finally {
       setClearing(false);
+    }
+  };
+
+  const handleRunWorkload = async () => {
+    if (!activeDevice) return;
+    try {
+      setRunningWorkload(true);
+      const res = await api.runWorkload({
+        storage_id: activeDevice.id,
+        profile: selectedProfile
+      });
+      toast.success(res.message);
+      setWorkloadModalOpen(false);
+      await refreshDevices();
+      navigate('/storage-map');
+    } catch (err: any) {
+      toast.error(err.message || 'Workload simulation failed');
+    } finally {
+      setRunningWorkload(false);
     }
   };
 
@@ -100,7 +134,37 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
+          {/* Quick Disk Selector Dropdown */}
+          {devices.length > 1 && (
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-canvas-light rounded-xl border border-subtle-border text-xs">
+              <HardDrive className="w-3.5 h-3.5 text-ink-secondary shrink-0" />
+              <select
+                value={activeDevice?.id || ''}
+                onChange={(e) => selectActiveDevice(Number(e.target.value))}
+                className="bg-transparent font-medium text-ink-primary focus:outline-none cursor-pointer pr-1"
+              >
+                {devices.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} ({d.total_blocks} blks)
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* SIMULATE ENTERPRISE WORKLOAD BUTTON */}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setWorkloadModalOpen(true)}
+            className="text-xs text-ink-secondary hover:text-ink-primary font-medium hidden sm:inline-flex"
+            icon={<Activity className="w-3.5 h-3.5 text-blue-600" />}
+            title="Simulate realistic enterprise cloud storage workload"
+          >
+            Workload Lab
+          </Button>
+
           {/* LOAD / SEED DEMO DATA BUTTON */}
           <Button
             variant="secondary"
@@ -114,7 +178,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
             {hasFiles ? 'RELOAD DEMO' : 'DEMO DATA'}
           </Button>
 
-          {/* REMOVE DEMO / CLEAR DISK BUTTON (visible whenever files are present) */}
+          {/* REMOVE DEMO / CLEAR DISK BUTTON */}
           {hasFiles && (
             <Button
               variant="secondary"
@@ -128,8 +192,8 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
             </Button>
           )}
 
-          {/* User Menu */}
-          <div className="flex items-center gap-3 pl-3 border-l border-subtle-border">
+          {/* User Profile Menu */}
+          <div className="flex items-center gap-3 pl-2.5 border-l border-subtle-border">
             <button
               onClick={() => navigate('/settings')}
               className="flex items-center gap-2 text-left hover:opacity-80 transition-opacity"
@@ -156,7 +220,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
         </div>
       </header>
 
-      {/* Confirmation Modal to Clear Demo Data */}
+      {/* Clear Demo Confirmation Modal */}
       <Modal
         isOpen={clearModalOpen}
         onClose={() => setClearModalOpen(false)}
@@ -192,6 +256,85 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
               icon={<Trash2 className="w-3.5 h-3.5" />}
             >
               Yes, Clear & Start Fresh
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Workload Simulation Modal */}
+      <Modal
+        isOpen={workloadModalOpen}
+        onClose={() => setWorkloadModalOpen(false)}
+        title="Enterprise Cloud Workload Generator"
+        description="Simulate realistic production storage traffic to observe fragmentation aging"
+        maxWidth="md"
+      >
+        <div className="space-y-4 mt-2">
+          <div className="space-y-2.5">
+            {[
+              {
+                id: 'web_server',
+                name: 'Web Server Burst & Purge',
+                desc: 'Frequent temporary HTTP log rotations, session caches, and sudden purges.'
+              },
+              {
+                id: 'database_crud',
+                name: 'Transactional Database Churn',
+                desc: 'Write-ahead logs (WAL), checkpoint file dumps, and sequential deletions.'
+              },
+              {
+                id: 'high_churn',
+                name: 'High-Velocity Cloud Store',
+                desc: 'Rapid randomized multi-tenant uploads and deletions across various file sizes.'
+              }
+            ].map((p) => (
+              <div
+                key={p.id}
+                onClick={() => setSelectedProfile(p.id)}
+                className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+                  selectedProfile === p.id
+                    ? 'bg-canvas-light/70 border-ink-primary ring-1 ring-ink-primary'
+                    : 'bg-white border-subtle-border hover:bg-canvas-light/30'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-ink-primary">{p.name}</span>
+                  <input
+                    type="radio"
+                    name="profile"
+                    checked={selectedProfile === p.id}
+                    onChange={() => {}}
+                    className="accent-ink-primary"
+                  />
+                </div>
+                <p className="text-[11px] text-ink-secondary mt-1">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-3 bg-canvas-light rounded-xl border border-subtle-border text-xs flex justify-between">
+            <span className="text-ink-secondary">Target Virtual Disk:</span>
+            <span className="font-bold text-ink-primary">{activeDevice?.name}</span>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-subtle-border">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setWorkloadModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              loading={runningWorkload}
+              onClick={handleRunWorkload}
+              icon={<Play className="w-3.5 h-3.5 text-lime" />}
+            >
+              Execute Workload
             </Button>
           </div>
         </div>
