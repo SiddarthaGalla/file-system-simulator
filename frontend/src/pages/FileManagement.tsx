@@ -18,7 +18,8 @@ import {
   Folder,
   RefreshCw,
   MoreVertical,
-  Plus
+  Plus,
+  RotateCcw
 } from 'lucide-react';
 import { api } from '../services/api';
 import { VirtualFile, Folder as FolderType } from '../types';
@@ -57,6 +58,10 @@ export const FileManagement: React.FC = () => {
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<VirtualFile | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Clear all demo/files modal state
+  const [clearAllModalOpen, setClearAllModalOpen] = useState(false);
+  const [clearingAll, setClearingAll] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -153,6 +158,22 @@ export const FileManagement: React.FC = () => {
     }
   };
 
+  const handleClearAllConfirm = async () => {
+    if (!activeDevice) return;
+    try {
+      setClearingAll(true);
+      await api.clearDemo(activeDevice.id);
+      toast.success('All files removed! Storage is 100% free and ready for your files.');
+      setClearAllModalOpen(false);
+      await fetchFiles();
+      await refreshDevices();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to clear storage');
+    } finally {
+      setClearingAll(false);
+    }
+  };
+
   const handleCreateFolder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFolderName.trim() || !activeDevice) return;
@@ -192,6 +213,18 @@ export const FileManagement: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {files.length > 0 && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setClearAllModalOpen(true)}
+              icon={<RotateCcw className="w-3.5 h-3.5 text-red-500" />}
+              className="text-xs text-ink-secondary hover:text-red-600 hover:border-red-200"
+              title="Delete all demo/current files to upload fresh files"
+            >
+              Clear Storage / Remove Demo
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="sm"
@@ -511,6 +544,44 @@ export const FileManagement: React.FC = () => {
               onClick={handleDeleteConfirm}
             >
               Release & Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Clear All / Remove Demo Data Modal */}
+      <Modal
+        isOpen={clearAllModalOpen}
+        onClose={() => setClearAllModalOpen(false)}
+        title="Clear All Files & Remove Demo Data"
+        description="Reset this virtual disk to an empty clean state"
+        maxWidth="sm"
+      >
+        <div className="space-y-4 mt-3">
+          <div className="p-3.5 bg-canvas-light border border-subtle-border rounded-2xl text-xs space-y-1.5 text-ink-primary">
+            <div className="font-semibold">Reset to clean disk:</div>
+            <p className="text-ink-secondary text-[11px]">
+              This will remove all {files.length} simulated files on <strong>{activeDevice?.name}</strong> and return all {activeDevice?.total_blocks || 100} blocks to 100% free status.
+            </p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setClearAllModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              loading={clearingAll}
+              onClick={handleClearAllConfirm}
+              icon={<Trash2 className="w-3.5 h-3.5" />}
+            >
+              Clear & Start Fresh
             </Button>
           </div>
         </div>

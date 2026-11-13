@@ -128,5 +128,13 @@ class TestE2EApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('Name,Type,Size_Bytes', res.data.decode('utf-8'))
 
+        # 15. Clear Demo Data / Start Fresh
+        res = self.client.post('/api/demo/clear', json={'storage_id': device_id}, headers=headers)
+        self.assertEqual(res.status_code, 200)
+        clear_res = res.get_json()
+        self.assertEqual(clear_res['device']['used_blocks'], 0)
+        self.assertEqual(clear_res['device']['free_blocks'], 100)
+        self.assertEqual(clear_res['analysis']['total_files'], 0)
+
 if __name__ == '__main__':
     unittest.main()

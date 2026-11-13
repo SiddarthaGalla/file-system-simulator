@@ -111,5 +111,6 @@ export const api = {
 
   // Demo
   seedDemo: () => request<any>('/demo/seed', { method: 'POST' }),
+  clearDemo: (storageId?: number) => request<any>('/demo/clear', { method: 'POST', body: JSON.stringify({ storage_id: storageId }) }),
 };
 
