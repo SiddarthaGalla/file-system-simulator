@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from config import Config
 from database import db
+import models
 from api import register_blueprints
 
 def create_app(config_class=Config):
@@ -39,6 +40,24 @@ def create_app(config_class=Config):
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         # Create database tables
         db.create_all()
+
+        # Seed default demo user if not exists
+        from models.user import User
+        if not User.query.filter_by(username='demo_admin').first():
+            demo_user = User(
+                username='demo_admin',
+                email='admin@simulator.os',
+                full_name='OS Capstone Lead'
+            )
+            demo_user.set_password('password123')
+            demo_user.settings = {
+                'default_block_size': 1024,
+                'default_allocation_method': 'first_fit',
+                'auto_defrag_threshold': 15.0,
+                'theme': 'light'
+            }
+            db.session.add(demo_user)
+            db.session.commit()
 
     return app
 

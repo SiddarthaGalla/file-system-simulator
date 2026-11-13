@@ -263,11 +263,10 @@ export const FileManagement: React.FC = () => {
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             <button
               onClick={() => setSelectedFolderId(null)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${
-                selectedFolderId === null
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${selectedFolderId === null
                   ? 'bg-ink-primary text-white'
                   : 'bg-canvas-light text-ink-secondary hover:text-ink-primary'
-              }`}
+                }`}
             >
               All Files
             </button>
@@ -275,11 +274,10 @@ export const FileManagement: React.FC = () => {
               <button
                 key={f.id}
                 onClick={() => setSelectedFolderId(f.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${
-                  selectedFolderId === f.id
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${selectedFolderId === f.id
                     ? 'bg-ink-primary text-white'
                     : 'bg-canvas-light text-ink-secondary hover:text-ink-primary'
-                }`}
+                  }`}
               >
                 <Folder className="w-3 h-3" />
                 {f.name}
@@ -414,9 +412,8 @@ export const FileManagement: React.FC = () => {
               if (e.dataTransfer.files) setSelectedFiles(e.dataTransfer.files);
             }}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-colors ${
-              dragActive ? 'border-lime bg-lime/10' : 'border-subtle-border hover:border-ink-muted'
-            }`}
+            className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-colors ${dragActive ? 'border-lime bg-lime/10' : 'border-subtle-border hover:border-ink-muted'
+              }`}
           >
             <input
               ref={fileInputRef}

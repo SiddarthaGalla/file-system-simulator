@@ -237,57 +237,68 @@ def clear_demo_data():
     Clears all demo data, resets active device blocks to 100% free,
     and allows user to upload their own fresh files.
     """
-    user = request.current_user
-    data = request.get_json() or {}
-    device_id = data.get('storage_id')
+    try:
+        user = request.current_user
+        data = request.get_json(silent=True) or {}
+        device_id = data.get('storage_id')
 
-    device = None
-    if device_id:
-        device = StorageDevice.query.filter_by(id=device_id, user_id=user.id).first()
-    if not device:
-        device = StorageDevice.query.filter_by(user_id=user.id, is_active=True).first()
-    if not device:
-        device = StorageDevice.query.filter_by(user_id=user.id).first()
+        device = None
+        if device_id:
+            device = StorageDevice.query.filter_by(id=device_id, user_id=user.id).first()
+        if not device:
+            device = StorageDevice.query.filter_by(user_id=user.id, is_active=True).first()
+        if not device:
+            device = StorageDevice.query.filter_by(user_id=user.id).first()
 
-    if not device:
-        return jsonify({'error': 'No storage device found'}), 404
+        if not device:
+            return jsonify({'error': 'No storage device found'}), 404
 
-    # Remove all physical uploaded files for this device
-    files_to_remove = VirtualFile.query.filter_by(storage_device_id=device.id).all()
-    for f in files_to_remove:
-        if f.stored_filename:
-            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], f.stored_filename)
-            if os.path.exists(file_path):
-                try:
-                    os.remove(file_path)
-                except:
-                    pass
+        # Remove all physical uploaded files for this device
+        files_to_remove = VirtualFile.query.filter_by(storage_device_id=device.id).all()
+        for f in files_to_remove:
+            if f.stored_filename:
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], f.stored_filename)
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
 
-    # Clear virtual files, folders, scans
-    VirtualFile.query.filter_by(storage_device_id=device.id).delete()
-    Folder.query.filter_by(storage_device_id=device.id).delete()
-    FragmentationScan.query.filter_by(device_id=device.id).delete()
+        # 1. Clear blocks first to remove foreign key references
+        StorageBlock.query.filter_by(device_id=device.id).delete()
+        db.session.flush()
 
-    # Re-initialize all storage blocks to free
-    VirtualDiskManager.initialize_blocks(device)
+        # 2. Clear virtual files, folders, scans
+        VirtualFile.query.filter_by(storage_device_id=device.id).delete()
+        Folder.query.filter_by(storage_device_id=device.id).delete()
+        FragmentationScan.query.filter_by(device_id=device.id).delete()
+        db.session.flush()
 
-    # Clean analysis
-    analysis = FragmentationAnalyzer.analyze(device, files=[])
+        # 3. Re-initialize all storage blocks to 100% free
+        VirtualDiskManager.initialize_blocks(device)
 
-    # Log activity
-    log = ActivityLog(
-        user_id=user.id,
-        device_id=device.id,
-        action_type='STORAGE_CLEARED',
-        description=f"Cleared all files and demo data on '{device.name}'. Disk reset to clean empty state."
-    )
-    db.session.add(log)
-    db.session.commit()
+        # 4. Clean analysis
+        analysis = FragmentationAnalyzer.analyze(device, files=[])
 
-    return jsonify({
-        'message': 'Storage cleared successfully! All blocks are free and ready for file upload.',
-        'device': device.to_dict(),
-        'analysis': analysis
-    }), 200
+        # 5. Log activity
+        log = ActivityLog(
+            user_id=user.id,
+            device_id=device.id,
+            action_type='STORAGE_CLEARED',
+            description=f"Cleared all files and demo data on '{device.name}'. Disk reset to clean empty state."
+        )
+        db.session.add(log)
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Storage cleared successfully! All blocks are free and ready for file upload.',
+            'device': device.to_dict(),
+            'analysis': analysis
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f"Failed to clear storage: {str(e)}"}), 500
 
 
