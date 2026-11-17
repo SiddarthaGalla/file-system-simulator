@@ -110,7 +110,7 @@ export const api = {
   exportCsvUrl: (type: 'files' | 'blocks', storageId?: number) => `${API_BASE}/reports/export/csv?type=${type}${storageId ? `&storage_id=${storageId}` : ''}`,
 
   // Demo
-  seedDemo: () => request<any>('/demo/seed', { method: 'POST' }),
+  seedDemo: (storageId?: number) => request<any>('/demo/seed', { method: 'POST', body: JSON.stringify({ storage_id: storageId }) }),
   clearDemo: (storageId?: number) => request<any>('/demo/clear', { method: 'POST', body: JSON.stringify({ storage_id: storageId }) }),
 
   // Disk Scheduling

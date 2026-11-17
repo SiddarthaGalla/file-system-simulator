@@ -61,14 +61,14 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
   const handleSeedDemo = async () => {
     try {
       setSeeding(true);
-      await api.seedDemo();
-      await refreshDevices();
-      toast.success('Demonstration scenario seeded with realistic fragmentation!');
-      if (location.pathname === '/') {
-        window.location.reload();
+      const res = await api.seedDemo(activeDevice?.id);
+      if (res.device) {
+        await selectActiveDevice(res.device.id);
       } else {
-        navigate('/storage-map');
+        await refreshDevices();
       }
+      toast.success('Demonstration scenario seeded with realistic fragmentation!');
+      window.location.reload();
     } catch (err: any) {
       toast.error(err.message || 'Failed to seed demo data');
     } finally {
@@ -83,7 +83,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
       await refreshDevices();
       toast.success('All demo files removed! Storage is 100% free and ready for your files.');
       setClearModalOpen(false);
-      navigate('/files');
+      window.location.reload();
     } catch (err: any) {
       toast.error(err.message || 'Failed to clear storage');
     } finally {
@@ -291,11 +291,10 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
               <div
                 key={p.id}
                 onClick={() => setSelectedProfile(p.id)}
-                className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
-                  selectedProfile === p.id
+                className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${selectedProfile === p.id
                     ? 'bg-canvas-light/70 border-ink-primary ring-1 ring-ink-primary'
                     : 'bg-white border-subtle-border hover:bg-canvas-light/30'
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs text-ink-primary">{p.name}</span>
@@ -303,7 +302,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
                     type="radio"
                     name="profile"
                     checked={selectedProfile === p.id}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     className="accent-ink-primary"
                   />
                 </div>

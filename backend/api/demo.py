@@ -23,17 +23,24 @@ def seed_demo_data():
     """
     Creates a pre-configured realistic cloud storage environment with
     controlled file fragmentation for capstone project demonstration.
+    Seeds into the current active storage device or specified storage_id.
     """
     user = request.current_user
+    data = request.get_json(silent=True) or {}
+    storage_id = data.get('storage_id')
 
-    # Find or create demo device
-    device = StorageDevice.query.filter_by(user_id=user.id, name='Capstone Demo Virtual Disk').first()
+    # Find the target device to seed: explicitly requested, currently active, or default
+    device = None
+    if storage_id:
+        device = StorageDevice.query.filter_by(id=storage_id, user_id=user.id).first()
     if not device:
-        # Deactivate existing devices
-        StorageDevice.query.filter_by(user_id=user.id).update({'is_active': False})
+        device = StorageDevice.query.filter_by(user_id=user.id, is_active=True).first()
+    if not device:
+        device = StorageDevice.query.filter_by(user_id=user.id).first()
+    if not device:
         device = StorageDevice(
             user_id=user.id,
-            name='Capstone Demo Virtual Disk',
+            name='Primary Virtual Disk',
             total_capacity_kb=102400, # 100 MB
             block_size_kb=1024,       # 1 MB blocks
             total_blocks=100,
@@ -41,12 +48,21 @@ def seed_demo_data():
         )
         db.session.add(device)
         db.session.commit()
-    else:
-        # Reset device
-        device.is_active = True
-        VirtualFile.query.filter_by(storage_device_id=device.id).delete()
-        Folder.query.filter_by(storage_device_id=device.id).delete()
-        FragmentationScan.query.filter_by(device_id=device.id).delete()
+
+    # Ensure device has at least 100 blocks for the full demo scenario
+    if device.total_blocks < 100:
+        device.total_blocks = 100
+        device.total_capacity_kb = 100 * device.block_size_kb
+
+    # Enforce that ONLY this target device is active across the system
+    StorageDevice.query.filter_by(user_id=user.id).update({'is_active': False})
+    device.is_active = True
+
+    # Clean existing data on this device to seed fresh demo data
+    VirtualFile.query.filter_by(storage_device_id=device.id).delete()
+    Folder.query.filter_by(storage_device_id=device.id).delete()
+    FragmentationScan.query.filter_by(device_id=device.id).delete()
+    db.session.commit()
 
     VirtualDiskManager.initialize_blocks(device)
 
@@ -280,7 +296,11 @@ def clear_demo_data():
         # 4. Clean analysis
         analysis = FragmentationAnalyzer.analyze(device, files=[])
 
-        # 5. Log activity
+        # 5. Enforce this cleared device remains uniquely active
+        StorageDevice.query.filter_by(user_id=user.id).update({'is_active': False})
+        device.is_active = True
+
+        # 6. Log activity
         log = ActivityLog(
             user_id=user.id,
             device_id=device.id,

@@ -25,13 +25,21 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       setIsLoading(true);
       const res = await api.getDevices();
-      setDevices(res.devices || []);
-      const active = (res.devices || []).find((d: StorageDevice) => d.is_active);
-      if (active) {
-        setActiveDevice(active);
-      } else if (res.devices && res.devices.length > 0) {
-        setActiveDevice(res.devices[0]);
-      } else {
+      const devList: StorageDevice[] = res.devices || [];
+      setDevices(devList);
+
+      setActiveDevice((prevActive) => {
+        if (prevActive) {
+          const matching = devList.find((d) => d.id === prevActive.id);
+          if (matching) return matching;
+        }
+        const active = devList.find((d) => d.is_active);
+        if (active) return active;
+        if (devList.length > 0) return devList[0];
+        return prevActive;
+      });
+
+      if (devList.length === 0) {
         // Fetch or create default active
         const def = await api.getActiveDevice();
         if (def && def.device) {

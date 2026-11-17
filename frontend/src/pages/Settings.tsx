@@ -19,7 +19,7 @@ import { Button } from '../components/ui/Button';
 
 export const Settings: React.FC = () => {
   const { user, refreshProfile } = useAuth();
-  const { refreshDevices } = useStorage();
+  const { activeDevice, refreshDevices, selectActiveDevice } = useStorage();
   const toast = useToast();
 
   const [fullName, setFullName] = useState(user?.full_name || '');
@@ -59,9 +59,14 @@ export const Settings: React.FC = () => {
   const handleSeedDemo = async () => {
     try {
       setSeeding(true);
-      await api.seedDemo();
-      await refreshDevices();
+      const res = await api.seedDemo(activeDevice?.id);
+      if (res.device) {
+        await selectActiveDevice(res.device.id);
+      } else {
+        await refreshDevices();
+      }
       toast.success('Demonstration scenario seeded successfully!');
+      window.location.reload();
     } catch (err: any) {
       toast.error(err.message || 'Failed to seed demo');
     } finally {
