@@ -196,7 +196,8 @@ def seed_demo_data():
             allocation_method=f_info['method'],
             is_fragmented=is_frag,
             extents_count=extents,
-            color_code=f_info['color']
+            color_code=f_info['color'],
+            is_demo=True
         )
         db.session.add(vf)
         db.session.flush()

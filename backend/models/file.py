@@ -42,6 +42,7 @@ class VirtualFile(db.Model):
     extents_count = db.Column(db.Integer, default=1)
     index_block_id = db.Column(db.Integer, nullable=True) # for indexed allocation
     color_code = db.Column(db.String(30), default='#3B82F6')
+    is_demo = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -64,6 +65,7 @@ class VirtualFile(db.Model):
             'extents_count': self.extents_count,
             'index_block_id': self.index_block_id,
             'color_code': self.color_code,
+            'is_demo': self.is_demo,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

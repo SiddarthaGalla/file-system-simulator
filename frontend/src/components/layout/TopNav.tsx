@@ -73,7 +73,11 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
       setClearing(true);
       await api.clearDemo(activeDevice?.id);
       await refreshDevices();
-      toast.success('All demo files removed! Storage is 100% free and ready for your files.');
+      toast.success(
+        isDemo
+          ? 'All demo files removed! Storage is 100% free and ready for your files.'
+          : 'All uploaded files cleared! Storage is 100% free.'
+      );
       setClearModalOpen(false);
       window.location.reload();
     } catch (err: any) {
@@ -83,7 +87,8 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
     }
   };
 
-  const hasFiles = (activeDevice?.used_blocks || 0) > 0;
+  const hasBlocks = (activeDevice?.used_blocks || 0) > 0;
+  const isDemo = Boolean(activeDevice?.is_demo_loaded);
 
   return (
     <>
@@ -134,22 +139,22 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
             loading={seeding}
             className="bg-lime/15 border-lime/30 text-ink-primary hover:bg-lime/25 font-semibold text-xs"
             icon={<Sparkles className="w-3.5 h-3.5 text-lime-600" />}
-            title="Load realistic cloud storage scenario with fragmented files"
+            title={isDemo ? "Reload realistic demonstration storage scenario" : "Load demonstration scenario with fragmented files"}
           >
-            {hasFiles ? 'RELOAD DEMO' : 'DEMO DATA'}
+            {isDemo ? 'RELOAD DEMO' : 'DEMO DATA'}
           </Button>
 
-          {/* REMOVE DEMO / CLEAR DISK BUTTON */}
-          {hasFiles && (
+          {/* REMOVE DEMO / CLEAR STORAGE BUTTON */}
+          {hasBlocks && (
             <Button
               variant="secondary"
               size="sm"
               onClick={() => setClearModalOpen(true)}
               className="text-xs text-ink-secondary hover:text-red-600 hover:border-red-200 hover:bg-red-50/50"
               icon={<RotateCcw className="w-3.5 h-3.5 text-red-500" />}
-              title="Remove all demo/stored files and start with an empty clean disk"
+              title={isDemo ? "Remove all demo files and reset disk" : "Clear all uploaded files and reset storage"}
             >
-              CLEAR DEMO
+              {isDemo ? 'CLEAR DEMO' : 'CLEAR STORAGE'}
             </Button>
           )}
 
@@ -181,21 +186,31 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
         </div>
       </header>
 
-      {/* Clear Demo Confirmation Modal */}
+      {/* Clear Confirmation Modal */}
       <Modal
         isOpen={clearModalOpen}
         onClose={() => setClearModalOpen(false)}
-        title="Remove Demo Data & Reset Storage"
-        description="Clear all simulated files and start fresh with an empty disk"
+        title={isDemo ? "Remove Demo Data & Reset Storage" : "Clear All Uploaded Files & Reset Storage"}
+        description={isDemo ? "Clear all simulated files and start fresh with an empty disk" : "Wipe all user-uploaded files and return all blocks to 100% free"}
         maxWidth="sm"
       >
         <div className="space-y-4 mt-2">
           <div className="p-3.5 bg-canvas-light rounded-2xl border border-subtle-border text-xs text-ink-primary space-y-2">
             <div className="font-semibold text-ink-primary">What happens when you confirm:</div>
             <ul className="list-disc pl-4 space-y-1 text-ink-secondary text-[11px]">
-              <li>All demo files and test extents will be deleted.</li>
-              <li>All <strong>{activeDevice?.total_blocks || 100} blocks</strong> will return to 100% free status.</li>
-              <li>You will be redirected to the File Manager to upload your own files.</li>
+              {isDemo ? (
+                <>
+                  <li>All demo files and test extents will be deleted.</li>
+                  <li>All <strong>{activeDevice?.total_blocks || 100} blocks</strong> will return to 100% free status.</li>
+                  <li>You can then upload your own custom files.</li>
+                </>
+              ) : (
+                <>
+                  <li>All your uploaded files and allocations will be deleted.</li>
+                  <li>All <strong>{activeDevice?.total_blocks || 100} blocks</strong> will return to 100% free status.</li>
+                  <li>Your virtual disk will be completely clean.</li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -216,7 +231,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
               onClick={handleClearDemoConfirm}
               icon={<Trash2 className="w-3.5 h-3.5" />}
             >
-              Yes, Clear & Start Fresh
+              {isDemo ? "Yes, Clear Demo Data" : "Yes, Clear All Storage"}
             </Button>
           </div>
         </div>

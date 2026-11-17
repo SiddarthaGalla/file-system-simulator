@@ -19,6 +19,10 @@ export interface StorageDevice {
   used_kb: number;
   free_kb: number;
   is_active: boolean;
+  is_demo_loaded?: boolean;
+  has_user_files?: boolean;
+  user_files_count?: number;
+  demo_files_count?: number;
   created_at: string;
 }
 
@@ -50,6 +54,7 @@ export interface VirtualFile {
   extents_count: number;
   index_block_id: number | null;
   color_code: string;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
   block_indices?: number[];

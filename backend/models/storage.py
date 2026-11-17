@@ -25,6 +25,14 @@ class StorageDevice(db.Model):
         allocated_count = 0
         if include_blocks_summary:
             allocated_count = self.blocks.filter_by(status='allocated').count() + self.blocks.filter_by(status='index_node').count()
+
+        file_list = list(self.files)
+        total_files = len(file_list)
+        demo_files = sum(1 for f in file_list if getattr(f, 'is_demo', False))
+        user_files = total_files - demo_files
+        is_demo_loaded = total_files > 0 and user_files == 0
+        has_user_files = user_files > 0
+
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -37,6 +45,10 @@ class StorageDevice(db.Model):
             'used_kb': allocated_count * self.block_size_kb,
             'free_kb': (self.total_blocks - allocated_count) * self.block_size_kb,
             'is_active': self.is_active,
+            'is_demo_loaded': is_demo_loaded,
+            'has_user_files': has_user_files,
+            'user_files_count': user_files,
+            'demo_files_count': demo_files,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
