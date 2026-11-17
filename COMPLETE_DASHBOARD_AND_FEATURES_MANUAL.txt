@@ -1,0 +1,537 @@
+================================================================================
+INTELLIGENT FILE STORAGE & ALLOCATION MANAGEMENT SIMULATOR
+COMPLETE SYSTEM, DASHBOARD, AND FEATURE MANUAL
+================================================================================
+Project: Development of an Intelligent File Storage and Allocation Management
+         System for Reducing Fragmentation in Cloud Storage Environments
+Discipline: Operating Systems & Cloud Storage Systems (Capstone Project)
+Architecture: React 19 + TypeScript + Vite + Tailwind CSS (Frontend)
+              Python Flask + SQLAlchemy + ReportLab (Backend REST API)
+Theme & Design: Ronas IT Dribbble-inspired Minimalist Enterprise SaaS
+================================================================================
+
+
+TABLE OF CONTENTS:
+--------------------------------------------------------------------------------
+ 1. System Architecture & High-Level Design
+ 2. Top Navigation Bar & Global Application Controls
+ 3. Left Navigation Sidebar
+ 4. Module 1: Dashboard (System Overview & Analytics)
+ 5. Module 2: File Management (Virtual File System & Folders)
+ 6. Module 3: Virtual Storage Devices (Disk Geometry & Clusters)
+ 7. Module 4: Interactive Storage Map (2D Block Matrix & Extent Inspector)
+ 8. Module 5: Fragmentation Analysis Engine (Formulas & Metrics)
+ 9. Module 6: File Allocation Algorithms (Contiguous, Linked, Indexed, First/Best Fit)
+10. Module 7: Genetic Algorithm Optimization Engine (Metaheuristic Solver)
+11. Module 8: Dynamic Defragmentation (Manual & Automatic Thresholds)
+12. Module 9: Performance Monitor & Disk Head Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK)
+13. Module 10: Enterprise Cloud Workload Lifecycle Generator
+14. Module 11: Comparison Analytics (Benchmarking & Multi-Algorithm Radar)
+15. Module 12: Reports & History (ReportLab PDF Generation & CSV Exports)
+16. Module 13: Settings & Authentication Architecture
+17. Database Schema & Data Models
+18. Comprehensive Examiner Viva & Presentation Q&A Guide
+
+
+================================================================================
+1. SYSTEM ARCHITECTURE & HIGH-LEVEL DESIGN
+================================================================================
+This application is a production-grade Operating Systems simulation environment.
+It simulates low-level block storage devices (equivalent to physical hard disk
+tracks, solid-state logical blocks, or cloud virtual block volumes like AWS EBS)
+without tampering with the host computer's physical drive.
+
+A. The Two-Layer Storage Architecture:
+   1. Physical Persistence Layer:
+      Actual uploaded files are safely stored in backend/uploads/.
+   2. Virtual Disk Allocation Layer:
+      The backend maintains an exact relational mapping of storage blocks in SQLite
+      via SQLAlchemy. Each block has a physical index [0 .. N-1], cluster state,
+      file extent index, allocation timestamp, and sector status.
+
+B. Visual Design Language:
+   Adopts the Ronas IT minimalist delivery dashboard design:
+   - Primary Canvas Background: #ECECEB (warm off-white)
+   - Secondary Surface: #FFFFFF (pure white rounded cards)
+   - Primary Ink Text: #181818 (charcoal black)
+   - Secondary Text: #5B5B59 (subtle graphite)
+   - Subtle Borders: #E1E1DE (clean hair-line separators)
+   - Primary Accent: #8FED0E (vibrant electric lime for success & primary actions)
+   - Alert Accent: Red/Amber used strictly for critical fragmentation and errors.
+
+
+================================================================================
+2. TOP NAVIGATION BAR & GLOBAL APPLICATION CONTROLS
+================================================================================
+The persistent top navigation bar (TopNav.tsx) provides instant access to global
+system utilities across every page of the application:
+
+1. ACTIVE DISK SWITCHER (Top Dropdown):
+   - Located at the center-left of the top bar.
+   - Allows instant switching between virtual storage devices without leaving the
+     current page.
+   - When switched, the entire dashboard, block matrix, and performance metrics
+     instantly re-query and synchronize with the selected disk's geometry.
+
+2. WORKLOAD LAB BUTTON:
+   - Opens an interactive modal allowing users to execute simulated cloud storage
+     traffic scenarios (Web Server burst/purge, Database churn, Cloud Store).
+   - Generates realistic file creation and deletion patterns to demonstrate
+     how fragmentation naturally occurs over time in production environments.
+
+3. DEMO DATA SEEDER ("Demo Data" Button):
+   - Seeds the active disk with a curated set of realistic files (documents, images,
+     logs, media) allocated with deliberate non-contiguous extents.
+   - Provides an immediate testbed to showcase fragmentation analysis, disk head
+     scheduling seek penalties, and GA optimization.
+
+4. CLEAR DEMO DATA ("Clear Demo" Button):
+   - Triggers an atomic confirmation modal.
+   - Unmaps all simulated blocks, deletes demo virtual files and folders, and
+     re-initializes the virtual disk into a clean 100% free state without
+     requiring database resets.
+
+5. GLOBAL SEARCH:
+   - Keyboard-accessible search input for filtering files, folders, and storage
+     devices across the active session.
+
+6. NOTIFICATIONS DRAWER & USER PROFILE:
+   - Displays real-time toast alerts and system background operation summaries.
+   - User menu provides authenticated profile info and one-click JWT logout.
+
+
+================================================================================
+3. LEFT NAVIGATION SIDEBAR
+================================================================================
+A collapsible, modern sidebar providing persistent access to the 12 core modules:
+- Dashboard (Executive overview & storage KPIs)
+- File Management (Explorer, file table, uploads, folder tree)
+- Storage Devices (Virtual disk provisioning & geometry configuration)
+- Storage Map (Interactive 2D block grid & extent highlighting)
+- Fragmentation Analysis (Mathematical fragmentation detection engine)
+- Allocation Algorithms (Contiguous, Linked, Indexed, First Fit, Best Fit)
+- GA Optimization (Genetic Algorithm metaheuristic allocation solver)
+- Defragmentation (Manual coalescing & automated threshold defrag)
+- Performance Monitor (Disk Head Scheduling: FCFS, SSTF, SCAN, C-SCAN, LOOK)
+- Comparison Analytics (Side-by-side radar and bar benchmarking)
+- Reports & History (PDF generation, CSV export, audit logging)
+- Settings (Disk default sizing, block parameters, account settings)
+
+At the bottom of the sidebar, an Active Disk Status Pill displays the active
+device name, block usage percentage, and health status dot.
+
+
+================================================================================
+4. MODULE 1: DASHBOARD (SYSTEM OVERVIEW & ANALYTICS)
+================================================================================
+The central nerve center providing real-time telemetry from backend algorithms.
+
+A. PRIMARY 8 KPI STATISTIC CARDS:
+   1. Total Capacity: Total disk space in MB and KB (Total Blocks × Block Size).
+   2. Used Storage: Occupied storage in MB, displaying exact utilization percentage.
+   3. Available Space: Unallocated free space in MB and free block count.
+   4. Fragmentation Ratio: Mathematical extent fragmentation percentage.
+   5. Total Uploaded Files: Total active files mapped to the virtual disk.
+   6. External Fragmentation: Percentage of free space trapped in small, scattered gaps.
+   7. Wasted Storage: Total internal slack space caused by block size quantization.
+   8. Last Optimization Date: Timestamp of the most recent GA run or defragmentation.
+
+B. DYNAMIC CHARTS & VISUALIZATIONS:
+   - Capacity Allocation Donut: Interactive donut chart showing Allocated vs. Free
+     blocks with an inner utilization percentage readout.
+   - Fragmentation Trend Line Chart: Historical telemetry showing how fragmentation
+     evolved across sequential scans and optimization operations.
+   - File Allocation Distribution: Breakdown of files by allocation strategy
+     (Contiguous vs. Linked vs. Indexed).
+   - Storage Utilization Progress Bar: Visual gauge of disk consumption.
+   - Recent Activity Feed: Real-time chronological audit trail of uploads, deletions,
+     scans, GA runs, and defragmentations.
+
+
+================================================================================
+5. MODULE 2: FILE MANAGEMENT (VIRTUAL FILE SYSTEM & FOLDERS)
+================================================================================
+A complete virtual file manager supporting enterprise file operations.
+
+A. FILE OPERATIONS:
+   - Single & Multi-file Uploads: Upload local files directly to the simulated disk.
+   - Drag-and-Drop Zone: Full drag-and-drop target with real-time file validation.
+   - Folder Management: Create nested folders, navigate folder breadcrumbs, and
+     move files between directories.
+   - File Actions: Download original file, rename file, view block breakdown, and
+     delete file (which atomically frees its occupied blocks).
+   - Search & Filters: Filter by file type (PDF, DOCX, TXT, CSV, PNG, JPG, MP4, ZIP)
+     and sort by Name, Size, Upload Date, and Extent Count.
+
+B. THE PROFESSIONAL FILE TABLE:
+   Columns displayed:
+   [File Name] | [File Type] | [File Size] | [Blocks Used] | [Extents] | [Method] | [Status] | [Actions]
+   - "Extents" Column: Highlights in vibrant green if Extents = 1 (Contiguous),
+     or in amber/red if Extents > 1 (Fragmented), revealing the physical fragmentation
+     of that specific file.
+
+
+================================================================================
+6. MODULE 3: VIRTUAL STORAGE DEVICES (DISK GEOMETRY & CLUSTERS)
+================================================================================
+Manages simulated hardware and cloud block storage volumes.
+
+A. DEVICE CONFIGURATION PARAMETERS:
+   - Device Name: User-defined identifier (e.g., "Primary Virtual Disk", "Cloud EBS Vol-1").
+   - Total Capacity: Configurable in MB (e.g., 50 MB, 100 MB, 500 MB).
+   - Block Size (Cluster Size): Configurable in KB (e.g., 512 KB, 1024 KB, 4096 KB).
+   - Total Blocks Calculation:
+       Total Blocks = (Capacity in MB × 1024) / Block Size in KB
+
+B. BLOCK-LEVEL INVARIANTS:
+   - Each block is assigned a discrete physical Block ID [0 .. Total Blocks - 1].
+   - Atomic allocation prevents double-allocation (collision-free guarantee).
+   - Capacity overflow validation blocks any write that exceeds free capacity.
+   - "Reset Disk" Action: Re-formats the simulated disk, resetting all sectors to free.
+
+
+================================================================================
+7. MODULE 4: INTERACTIVE STORAGE MAP (2D BLOCK MATRIX & EXTENT INSPECTOR)
+================================================================================
+A visual, real-time representation of physical disk sectors.
+
+A. 2D BLOCK GRID:
+   - Renders every single block on the active virtual disk as a responsive cell.
+   - Color Coding:
+     * Dark Charcoal (#181818): Contiguous allocated file block.
+     * Amber / Orange: Fragmented file block (file split into multiple extents).
+     * Soft Off-White (#FFFFFF / #ECECEB): Free unallocated block.
+     * Accent Lime (#8FED0E): Currently selected or highlighted file extent.
+
+B. INTERACTIVE CAPABILITIES:
+   - Block Hover Tooltip: Displays Block ID, Owner File Name, Logical File Block
+     Offset, Allocation Method, and Allocation Timestamp.
+   - File Highlighting: Clicking any file highlights all its scattered extents across
+     the entire grid, visually demonstrating fragmentation.
+   - Side-by-Side Comparison Mode: Displays two synchronous disk maps showing
+     "Before Optimization" vs. "After Optimization" layouts.
+
+
+================================================================================
+8. MODULE 5: FRAGMENTATION ANALYSIS ENGINE (FORMULAS & METRICS)
+================================================================================
+A mathematically rigorous engine that scans disk geometry and calculates exact
+fragmentation statistics.
+
+MATHEMATICAL FORMULAS IMPLEMENTED:
+
+1. SIMULATOR FILE FRAGMENTATION RATIO:
+   Measures how fragmented active files are compared to ideal contiguous allocation.
+   Formula:
+       Fragmentation Ratio = [(Total Extents - Active Files) / Total Extents] × 100%
+   - Ideal case (all files contiguous): Total Extents = Active Files → Ratio = 0.0%.
+   - Worst case (every block isolated): Total Extents = Total Allocated Blocks.
+
+2. EXTERNAL FRAGMENTATION PERCENTAGE:
+   Measures free space scattered in unusable small gaps rather than a contiguous pool.
+   Formula:
+       External Fragmentation = [1 - (Largest Free Extent / Total Free Blocks)] × 100%
+   - If all free blocks form one single uninterrupted block run: Ratio = 0.0%.
+   - If free blocks are broken into isolated single-block gaps: Ratio approaches 100%.
+
+3. SLACK SPACE (INTERNAL FRAGMENTATION):
+   Quantization loss when file size is not an exact multiple of the block size.
+   Formula:
+       Slack Space per File = (Allocated Blocks × Block Size KB) - Actual File Size KB
+       Total Wasted Space = Sum of Slack Space across all active files.
+
+
+================================================================================
+9. MODULE 6: FILE ALLOCATION ALGORITHMS (OS MECHANISMS)
+================================================================================
+Implements and benchmarks the three foundational Operating Systems file allocation
+methods, paired with dynamic block placement strategies.
+
+A. ALLOCATION METHODS:
+   1. Contiguous Allocation:
+      - Requires all blocks of a file to occupy sequential, contiguous physical sectors.
+      - Pros: Blazing fast sequential and direct access; minimal disk head movement.
+      - Cons: Suffers heavily from External Fragmentation; cannot allocate if no single
+        free gap is large enough, even if total free space is sufficient.
+   2. Linked Allocation:
+      - Each block contains a pointer to the next block in the chain.
+      - Pros: Zero external fragmentation; any free block can be used.
+      - Cons: Random access is extremely slow ($O(N)$ pointer traversal); if a pointer
+        is corrupted, remaining file data is lost.
+   3. Indexed Allocation:
+      - An Index Block (inode) stores an array of pointers to all data blocks.
+      - Pros: Fast direct access without external fragmentation.
+      - Cons: Index block overhead for small files; file size limited by index capacity
+        unless multi-level indexing is used.
+
+B. PLACEMENT STRATEGIES:
+   - First Fit: Scans from block 0 and allocates into the first available gap that fits.
+     (Fastest allocation execution time).
+   - Best Fit: Searches the entire disk to find the smallest free gap that satisfies
+     the file's size. (Preserves larger free gaps for upcoming large files).
+
+C. BENCHMARK TELEMETRY:
+   For every allocation, the engine measures and displays:
+   Execution Time (ms), Extents Count, Simulated Read Latency, and Allocation Status.
+
+
+================================================================================
+10. MODULE 7: GENETIC ALGORITHM OPTIMIZATION ENGINE (METAHEURISTIC SOLVER)
+================================================================================
+The intelligent core of the capstone project. Solves defragmentation as a multi-objective
+combinatorial optimization problem using evolutionary biology principles.
+
+A. THE CHROMOSOME REPRESENTATION:
+   - Genome: An array of length $N$ (Total Disk Blocks).
+   - Gene Value: `file_id` (allocated) or `None` (free).
+   - Invariant Guarantee: Every candidate chromosome strictly maintains the exact
+     block count for each file (100% data safety; zero block collisions).
+
+B. THE MULTI-OBJECTIVE FITNESS FUNCTION:
+   Maximizes overall fitness score $F \in (0, 1]$:
+       F = w1 * (1 - Normalized_Frag) + w2 * (Free_Contiguity) - w3 * (Normalized_Movement)
+
+   - w1 (Extent Reduction, default 0.55): Rewards grouping file blocks into 1 extent.
+   - w2 (Free Space Contiguity, default 0.30): Rewards merging free blocks into one large pool.
+   - w3 (Movement Penalty, default 0.15): Penalizes relocating blocks to preserve SSD
+     flash endurance and minimize cloud I/O costs.
+
+C. EVOLUTIONARY OPERATORS:
+   - Tournament Selection (k=3): Selects parents based on highest fitness.
+   - Multiset Order Crossover (OX, 85% rate): Slices and recombines candidate disk
+     layouts while guaranteeing valid file block quotas.
+   - Triple Mutation Operator (15% rate):
+     1. Extent Consolidation Mutation (gathers fragmented blocks into a contiguous window).
+     2. Block Swap Mutation (exchanges two physical sector allocations).
+     3. Extent Slide Mutation (shifts an extent into adjacent free space).
+   - Elitism (Count: 2): Guarantees the best 2 discovered solutions survive untouched,
+     ensuring strictly monotonic fitness improvement across generations.
+
+D. VISUALIZATION & APPLY:
+   - Dual-line convergence charts display Generation vs. Fitness and Generation vs. Extents.
+   - "Apply Optimized Allocation" button writes the evolved layout into the database.
+
+
+================================================================================
+11. MODULE 8: DYNAMIC DEFRAGMENTATION (MANUAL & AUTOMATIC THRESHOLDS)
+================================================================================
+Simulates atomic background defragmentation routines.
+
+A. MODES OF OPERATION:
+   1. Manual Defragmentation:
+      The user explicitly clicks "Run Defragmentation", specifying an algorithm
+      (Contiguous Compaction or GA-guided Coalescing).
+   2. Automated Threshold Defragmentation:
+      The simulator monitors fragmentation ratio. When fragmentation exceeds a
+      configurable threshold (e.g., > 15%), an automated background defrag job
+      is triggered.
+
+B. EXECUTION PHASES:
+   1. Extent Analysis: Identifies all files where Extents > 1.
+   2. Target Reassignment: Relocates scattered blocks into contiguous free spans.
+   3. Atomic Block Commit: Updates database mappings inside an atomic transaction.
+   4. Verification Pass: Confirms zero data loss and verifies new Extent Count = 1.
+
+
+================================================================================
+12. MODULE 9: PERFORMANCE MONITOR & DISK HEAD SCHEDULING
+================================================================================
+Simulates physical disk geometry, cylinder travel, and head scheduling algorithms
+to physically demonstrate why fragmentation degrades storage performance.
+
+A. FIVE DISK SCHEDULING ALGORITHMS IMPLEMENTED:
+   1. FCFS (First-Come, First-Served):
+      Services read requests in the exact order files were requested. High cylinder
+      travel; prone to wild head oscillations.
+   2. SSTF (Shortest Seek Time First):
+      Always selects the request closest to the current head position. Minimizes
+      average seek time, but can cause starvation for peripheral cylinders.
+   3. SCAN (Elevator Algorithm):
+      Disk arm moves in one direction servicing all requests until it reaches the
+      end cylinder, then reverses direction. Prevents starvation.
+   4. C-SCAN (Circular SCAN):
+      Arm sweeps across the disk in one direction servicing requests, then immediately
+      jumps back to cylinder 0 without servicing on the return trip. Provides uniform
+      wait times.
+   5. LOOK:
+      Optimized SCAN variant: Arm only travels as far as the final request in each
+      direction before reversing, eliminating unnecessary travel to the disk boundary.
+
+B. CYLINDER TRAVEL & LATENCY SIMULATION:
+   - Simulates physical tracks/cylinders mapped to disk block indices.
+   - Computes:
+     * Total Head Movement (tracks traversed).
+     * Estimated Seek Latency (in milliseconds, based on physical head velocity).
+     * Algorithm Head Travel Comparison Bar Chart.
+
+C. BEFORE VS. AFTER GA WEAR REDUCTION:
+   Displays the direct mechanical benefit of GA defragmentation:
+   - Compares cylinder head travel before defragmentation vs. after defragmentation.
+   - Calculates Physical Arm Wear & Latency Reduction Percentage:
+       Wear Reduction % = [(Travel_fragmented - Travel_optimized) / Travel_fragmented] × 100%
+   - Typically demonstrates a 60% to 85% reduction in mechanical travel and seek delay!
+
+
+================================================================================
+13. MODULE 10: ENTERPRISE CLOUD WORKLOAD LIFECYCLE GENERATOR
+================================================================================
+Demonstrates how production cloud workloads naturally induce severe fragmentation
+over time. Accessible via the "Workload Lab" in the top navigation bar.
+
+THREE PRE-CONFIGURED WORKLOAD SCENARIOS:
+1. Web Server Burst & Purge:
+   - High burst of small temporary log and cache files (1 - 3 blocks each).
+   - Followed by selective purge of every second file.
+   - Result: Generates severe external fragmentation with dozens of scattered
+     single-block holes.
+2. Database Transactional Churn:
+   - Simulates heavy transactional inserts, appends, and table row deletions.
+   - Appends extra blocks to existing files, forcing them to break into non-contiguous
+     extents when neighboring blocks are occupied.
+3. Cloud Object Store:
+   - Mixed-size files (images, documents, archives from 2 to 12 blocks each).
+   - Interleaved writes and deletions simulating multi-tenant S3-style object storage.
+
+
+================================================================================
+14. MODULE 11: COMPARISON ANALYTICS (BENCHMARKING & RADAR CHARTS)
+================================================================================
+Provides empirical multi-attribute benchmarking of all algorithms.
+
+A. COMPARATIVE METRICS EVALUATED:
+   1. Sequential Read Throughput (MB/s).
+   2. Random Access Latency (ms).
+   3. File Contiguity Ratio (%).
+   4. Space Utilization Efficiency (%).
+   5. Allocation & Compaction Execution Overhead (ms).
+
+B. VISUAL BENCHMARKING:
+   - Multi-Axis Radar Chart: Compares Contiguous vs. Linked vs. Indexed vs. GA
+     Optimized layouts across all 5 dimensions simultaneously.
+   - Comparative Bar Charts: Head-to-head read latency and extent count comparisons.
+
+
+================================================================================
+15. MODULE 12: REPORTS & HISTORY (PDF GENERATION & CSV EXPORTS)
+================================================================================
+Enterprise auditability and reporting subsystem.
+
+A. REPORTLAB PDF REPORT GENERATOR:
+   - Generates an executive-ready, multi-page PDF performance report directly from
+     backend Python using the ReportLab library.
+   - Includes:
+     * Executive Storage Summary & Active Disk Geometry.
+     * Before & After Fragmentation Metrics.
+     * Full File Allocation Extent Table.
+     * Disk Scheduling Cylinder Travel Analysis.
+     * Professional styling with corporate header, tables, and metric badges.
+
+B. CSV DATA EXPORT:
+   - One-click export of complete block-by-block and file-by-file telemetry for
+     external statistical analysis in Excel, R, or Python Pandas.
+
+C. AUDIT ACTIVITY LOGS:
+   - Immutable chronological event log tracking every system action (Upload, Delete,
+     Scan, GA Run, Defrag, Workload) with timestamps, execution time, and user IDs.
+
+
+================================================================================
+16. MODULE 13: SETTINGS & AUTHENTICATION ARCHITECTURE
+================================================================================
+A. AUTHENTICATION MODULE:
+   - Secure User Registration and Login pages designed in minimal Ronas IT aesthetic.
+   - Passwords hashed using bcrypt.
+   - Stateless JWT (JSON Web Tokens) with token expiration and claims validation.
+   - Protected client-side React routes via AuthContext.
+
+B. SIMULATOR CONFIGURATION SETTINGS:
+   - Configurable default storage disk capacity (MB).
+   - Configurable default cluster block size (KB).
+   - Configurable automated defragmentation threshold trigger percentage.
+   - Configurable default GA population size and evolutionary generations.
+
+
+================================================================================
+17. DATABASE SCHEMA & DATA MODELS
+================================================================================
+Implemented using SQLAlchemy ORM (compatible with SQLite and PostgreSQL):
+
+1. `users`:
+   - id, username, email, password_hash, full_name, created_at.
+2. `storage_devices`:
+   - id, user_id, name, total_capacity_kb, block_size_kb, total_blocks, created_at.
+3. `storage_blocks`:
+   - id, device_id, block_index, status ('free' | 'allocated'), file_id,
+     logical_block_index, updated_at.
+4. `virtual_files`:
+   - id, user_id, device_id, folder_id, name, original_filename, size_bytes,
+     allocated_blocks_count, extents_count, allocation_method, created_at.
+5. `folders`:
+   - id, user_id, device_id, parent_id, name, created_at.
+6. `fragmentation_scans`:
+   - id, device_id, fragmentation_percentage, external_frag_pct, fragmented_files,
+     wasted_storage_kb, largest_free_extent, scanned_at.
+7. `ga_optimization_runs`:
+   - id, device_id, population_size, generations, mutation_rate, crossover_rate,
+     initial_frag, optimized_frag, blocks_moved, execution_time_ms, status.
+8. `ga_generation_metrics`:
+   - id, run_id, generation_number, best_fitness, avg_fitness, best_fragmentation,
+     extents_count.
+9. `disk_head_simulations`:
+   - id, device_id, algorithm, initial_head, total_head_movement, seek_latency_ms.
+10. `activity_logs`:
+    - id, user_id, device_id, action_type, description, status, execution_time_ms, created_at.
+
+
+================================================================================
+18. COMPREHENSIVE EXAMINER VIVA & PRESENTATION Q&A GUIDE
+================================================================================
+
+Q1: What is the main objective of your capstone project?
+A1: The project develops an intelligent file storage and allocation management
+    simulator that models virtual block devices, analyzes file fragmentation, and
+    uses a multi-objective Genetic Algorithm to optimize block allocation. It minimizes
+    file extents and free space fragmentation while strictly penalizing unnecessary
+    block movements to prevent SSD wear and high cloud I/O costs.
+
+Q2: Why is fragmentation a major issue in Operating Systems and Cloud Storage?
+A2: When files are non-contiguous, mechanical hard drives suffer high seek latency
+    due to repeated head oscillations across cylinders. In cloud environments (AWS EBS,
+    Azure Managed Disks), fragmented files require multiple discrete I/O operations,
+    depleting provisioned IOPS quotas and causing severe cloud storage billing escalation
+    and throttling.
+
+Q3: Why use a Genetic Algorithm instead of traditional defragmentation?
+A3: Traditional defragmenters use linear compaction that shifts almost every block to
+    sector 0. This creates massive Write Amplification, wearing out flash memory (SSDs)
+    and locking storage I/O. The Genetic Algorithm frames defragmentation as an
+    NP-Hard multi-objective optimization problem, balancing extent reduction (w1),
+    free space coalescing (w2), and block movement minimization (w3) to achieve maximum
+    contiguity with the fewest possible block moves.
+
+Q4: How do you guarantee zero data loss during Genetic Algorithm evolution?
+A4: We use a Multiset Permutation representation where chromosomes maintain the exact
+    block count of every file. Our custom Multiset Order Crossover (OX) and mutation
+    operators enforce 100% data invariant safety: zero block collisions, zero file
+    truncation, and total capacity preservation.
+
+Q5: What are the 5 Disk Head Scheduling algorithms implemented, and what did you observe?
+A5: We implemented FCFS, SSTF, SCAN, C-SCAN, and LOOK. We observed that after GA
+    optimization, total cylinder head travel across all algorithms drops by 60% to 85%
+    because files are consolidated into contiguous extents, drastically cutting
+    seek latency.
+
+Q6: How does the system handle real-world cloud workloads?
+A6: The Workload Lab simulates real-world cloud traffic patterns: Web Server burst
+    and purges (creating scattered single-block holes), Database transactional churn
+    (triggering append-induced extents), and multi-tenant Cloud Object Stores.
+
+Q7: What technologies power the application?
+A7: - Frontend: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts.
+    - Backend: Python Flask REST API, SQLAlchemy ORM, SQLite database.
+    - Analytics: ReportLab (PDF generation), Python NumPy/math, custom GA engine.
+
+================================================================================
+END OF COMPLETE DASHBOARD AND SYSTEM MANUAL
+================================================================================
+

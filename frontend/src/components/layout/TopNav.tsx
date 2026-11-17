@@ -203,9 +203,9 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobile }) => {
               </div>
               <div className="hidden sm:block">
                 <div className="text-xs font-bold text-ink-primary leading-none">
-                  {user?.full_name || user?.username || 'Researcher'}
+                  {user?.full_name && !user.full_name.includes('OS Capstone') ? user.full_name : (user?.username || 'Administrator')}
                 </div>
-                <div className="text-[10px] text-ink-secondary mt-0.5">OS Capstone</div>
+                <div className="text-[10px] text-ink-secondary mt-0.5">Storage Admin</div>
               </div>
             </button>
 

@@ -43,11 +43,12 @@ def create_app(config_class=Config):
 
         # Seed default demo user if not exists
         from models.user import User
-        if not User.query.filter_by(username='demo_admin').first():
+        demo_user = User.query.filter_by(username='demo_admin').first()
+        if not demo_user:
             demo_user = User(
                 username='demo_admin',
                 email='admin@simulator.os',
-                full_name='OS Capstone Lead'
+                full_name='Storage Administrator'
             )
             demo_user.set_password('password123')
             demo_user.settings = {
@@ -57,6 +58,9 @@ def create_app(config_class=Config):
                 'theme': 'light'
             }
             db.session.add(demo_user)
+            db.session.commit()
+        elif demo_user.full_name == 'OS Capstone Lead':
+            demo_user.full_name = 'Storage Administrator'
             db.session.commit()
 
     return app
