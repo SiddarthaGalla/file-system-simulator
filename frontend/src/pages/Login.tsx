@@ -10,8 +10,8 @@ export const Login: React.FC = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState('demo_admin');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,8 +34,9 @@ export const Login: React.FC = () => {
   };
 
   const handleDemoFill = () => {
-    setUsername('os_researcher');
-    setPassword('research123');
+    setUsername('demo_admin');
+    setPassword('password123');
+    toast.info('Demo credentials populated');
   };
 
   return (
