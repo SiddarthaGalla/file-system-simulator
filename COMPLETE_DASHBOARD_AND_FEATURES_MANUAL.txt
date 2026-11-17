@@ -25,12 +25,11 @@ TABLE OF CONTENTS:
 10. Module 7: Genetic Algorithm Optimization Engine (Metaheuristic Solver)
 11. Module 8: Dynamic Defragmentation (Manual & Automatic Thresholds)
 12. Module 9: Performance Monitor & Disk Head Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK)
-13. Module 10: Enterprise Cloud Workload Lifecycle Generator
-14. Module 11: Comparison Analytics (Benchmarking & Multi-Algorithm Radar)
-15. Module 12: Reports & History (ReportLab PDF Generation & CSV Exports)
-16. Module 13: Settings & Authentication Architecture
-17. Database Schema & Data Models
-18. Comprehensive Examiner Viva & Presentation Q&A Guide
+13. Module 10: Comparison Analytics (Benchmarking & Multi-Algorithm Radar)
+14. Module 11: Reports & History (ReportLab PDF Generation & CSV Exports)
+15. Module 12: Settings & Authentication Architecture
+16. Database Schema & Data Models
+17. Comprehensive Examiner Viva & Presentation Q&A Guide
 
 
 ================================================================================
@@ -73,25 +72,19 @@ system utilities across every page of the application:
    - When switched, the entire dashboard, block matrix, and performance metrics
      instantly re-query and synchronize with the selected disk's geometry.
 
-2. WORKLOAD LAB BUTTON:
-   - Opens an interactive modal allowing users to execute simulated cloud storage
-     traffic scenarios (Web Server burst/purge, Database churn, Cloud Store).
-   - Generates realistic file creation and deletion patterns to demonstrate
-     how fragmentation naturally occurs over time in production environments.
-
-3. DEMO DATA SEEDER ("Demo Data" Button):
+2. DEMO DATA SEEDER ("Demo Data" Button):
    - Seeds the active disk with a curated set of realistic files (documents, images,
      logs, media) allocated with deliberate non-contiguous extents.
    - Provides an immediate testbed to showcase fragmentation analysis, disk head
      scheduling seek penalties, and GA optimization.
 
-4. CLEAR DEMO DATA ("Clear Demo" Button):
+3. CLEAR DEMO DATA ("Clear Demo" Button):
    - Triggers an atomic confirmation modal.
    - Unmaps all simulated blocks, deletes demo virtual files and folders, and
      re-initializes the virtual disk into a clean 100% free state without
      requiring database resets.
 
-5. GLOBAL SEARCH:
+4. GLOBAL SEARCH:
    - Keyboard-accessible search input for filtering files, folders, and storage
      devices across the active session.
 
@@ -373,28 +366,7 @@ C. BEFORE VS. AFTER GA WEAR REDUCTION:
 
 
 ================================================================================
-13. MODULE 10: ENTERPRISE CLOUD WORKLOAD LIFECYCLE GENERATOR
-================================================================================
-Demonstrates how production cloud workloads naturally induce severe fragmentation
-over time. Accessible via the "Workload Lab" in the top navigation bar.
-
-THREE PRE-CONFIGURED WORKLOAD SCENARIOS:
-1. Web Server Burst & Purge:
-   - High burst of small temporary log and cache files (1 - 3 blocks each).
-   - Followed by selective purge of every second file.
-   - Result: Generates severe external fragmentation with dozens of scattered
-     single-block holes.
-2. Database Transactional Churn:
-   - Simulates heavy transactional inserts, appends, and table row deletions.
-   - Appends extra blocks to existing files, forcing them to break into non-contiguous
-     extents when neighboring blocks are occupied.
-3. Cloud Object Store:
-   - Mixed-size files (images, documents, archives from 2 to 12 blocks each).
-   - Interleaved writes and deletions simulating multi-tenant S3-style object storage.
-
-
-================================================================================
-14. MODULE 11: COMPARISON ANALYTICS (BENCHMARKING & RADAR CHARTS)
+13. MODULE 10: COMPARISON ANALYTICS (BENCHMARKING & RADAR CHARTS)
 ================================================================================
 Provides empirical multi-attribute benchmarking of all algorithms.
 
@@ -412,7 +384,7 @@ B. VISUAL BENCHMARKING:
 
 
 ================================================================================
-15. MODULE 12: REPORTS & HISTORY (PDF GENERATION & CSV EXPORTS)
+14. MODULE 11: REPORTS & HISTORY (PDF GENERATION & CSV EXPORTS)
 ================================================================================
 Enterprise auditability and reporting subsystem.
 
@@ -432,11 +404,11 @@ B. CSV DATA EXPORT:
 
 C. AUDIT ACTIVITY LOGS:
    - Immutable chronological event log tracking every system action (Upload, Delete,
-     Scan, GA Run, Defrag, Workload) with timestamps, execution time, and user IDs.
+     Scan, GA Run, Defrag) with timestamps, execution time, and user IDs.
 
 
 ================================================================================
-16. MODULE 13: SETTINGS & AUTHENTICATION ARCHITECTURE
+15. MODULE 12: SETTINGS & AUTHENTICATION ARCHITECTURE
 ================================================================================
 A. AUTHENTICATION MODULE:
    - Secure User Registration and Login pages designed in minimal Ronas IT aesthetic.
@@ -452,7 +424,7 @@ B. SIMULATOR CONFIGURATION SETTINGS:
 
 
 ================================================================================
-17. DATABASE SCHEMA & DATA MODELS
+16. DATABASE SCHEMA & DATA MODELS
 ================================================================================
 Implemented using SQLAlchemy ORM (compatible with SQLite and PostgreSQL):
 
@@ -484,7 +456,7 @@ Implemented using SQLAlchemy ORM (compatible with SQLite and PostgreSQL):
 
 
 ================================================================================
-18. COMPREHENSIVE EXAMINER VIVA & PRESENTATION Q&A GUIDE
+17. COMPREHENSIVE EXAMINER VIVA & PRESENTATION Q&A GUIDE
 ================================================================================
 
 Q1: What is the main objective of your capstone project?
@@ -521,10 +493,11 @@ A5: We implemented FCFS, SSTF, SCAN, C-SCAN, and LOOK. We observed that after GA
     because files are consolidated into contiguous extents, drastically cutting
     seek latency.
 
-Q6: How does the system handle real-world cloud workloads?
-A6: The Workload Lab simulates real-world cloud traffic patterns: Web Server burst
-    and purges (creating scattered single-block holes), Database transactional churn
-    (triggering append-induced extents), and multi-tenant Cloud Object Stores.
+Q6: How do you demonstrate fragmentation in real-world scenarios?
+A6: The simulator includes realistic demo data seeding that allocates heterogeneous files
+    (documents, logs, code, media) with non-contiguous extents across the virtual disk.
+    Users can also upload custom files and delete/allocate files to observe real-time
+    fragmentation dynamics.
 
 Q7: What technologies power the application?
 A7: - Frontend: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts.

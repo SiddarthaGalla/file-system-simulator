@@ -5,9 +5,8 @@ from database import db
 from models.user import User
 from models.storage import StorageDevice
 from engine.virtual_disk import VirtualDiskManager
-from engine.workload_generator import WorkloadGenerator
 
-class TestSchedulerAndWorkload(unittest.TestCase):
+class TestScheduler(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.app.config['TESTING'] = True
@@ -60,17 +59,6 @@ class TestSchedulerAndWorkload(unittest.TestCase):
         all_res = DiskScheduler.evaluate_all(requests, total_blocks=50, initial_head=initial_head)
         self.assertIn('winner', all_res)
         self.assertEqual(len(all_res['algorithms']), 5)
-
-    def test_workload_generator_execution(self):
-        result = WorkloadGenerator.run_workload(
-            user_id=self.user.id,
-            device_id=self.device.id,
-            profile_key='web_server',
-            operations_count=6
-        )
-        self.assertEqual(result['profile']['name'], 'Web Server Burst & Purge')
-        self.assertGreater(result['steps_executed'], 0)
-        self.assertIn('analysis', result)
 
 if __name__ == '__main__':
     unittest.main()

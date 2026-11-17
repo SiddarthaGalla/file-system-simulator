@@ -115,10 +115,6 @@ export const api = {
 
   // Disk Scheduling
   simulateScheduling: (payload: any) => request<any>('/scheduling/simulate', { method: 'POST', body: JSON.stringify(payload) }),
-  compareScheduling: (storageId?: number) => request<any>(`/scheduling/compare${storageId ? `?storage_id=${storageId}` : ''}`),
-
-  // Workload Generator
-  getWorkloadProfiles: () => request<any>('/workload/profiles'),
-  runWorkload: (payload: any) => request<any>('/workload/run', { method: 'POST', body: JSON.stringify(payload) }),
+  compareScheduling: (storageId?: number) => request<any>(`/scheduling/compare${storageId ? `?storage_id=${storageId}` : ''}`)
 };
 
