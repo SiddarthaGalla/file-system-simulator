@@ -299,7 +299,7 @@ export const FileManagement: React.FC = () => {
                 <th className="py-3 px-4">Blocks Used</th>
                 <th className="py-3 px-4">Extents</th>
                 <th className="py-3 px-4">Allocation Method</th>
-                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Fragmentation Status</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -358,9 +358,9 @@ export const FileManagement: React.FC = () => {
                     </td>
                     <td className="py-3 px-4">
                       {file.is_fragmented ? (
-                        <Badge variant="danger">Fragmented</Badge>
+                        <Badge variant="danger">Fragmented ({file.extents_count} extents)</Badge>
                       ) : (
-                        <Badge variant="lime">Contiguous</Badge>
+                        <Badge variant="lime">Optimal (1 Extent)</Badge>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -446,12 +446,16 @@ export const FileManagement: React.FC = () => {
               onChange={(e) => setUploadMethod(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-subtle-border bg-white text-xs focus:outline-none focus:border-ink-primary"
             >
-              <option value="first_fit">First Fit (OS Dynamic Placement)</option>
+              <option value="first_fit">First Fit (Places in first available contiguous space)</option>
               <option value="best_fit">Best Fit (Minimizes Leftover Fragment)</option>
               <option value="contiguous">Contiguous Allocation (Requires Continuous Span)</option>
               <option value="linked">Linked Allocation (Pointer-chained Blocks)</option>
               <option value="indexed">Indexed Allocation (Index Node + Data Blocks)</option>
+              <option value="scattered">Simulate Fragmentation (Scatters Blocks Non-Contiguously)</option>
             </select>
+            <p className="text-[10px] text-ink-secondary mt-1.5 leading-relaxed">
+              💡 <strong>OS Principle:</strong> On a fresh disk, all standard algorithms allocate consecutively (0% fragmentation). To create real fragmentation, delete a file in between to leave a gap, or choose <em>Simulate Fragmentation</em>.
+            </p>
           </div>
 
           <div className="flex justify-end gap-2 pt-2 border-t border-subtle-border">

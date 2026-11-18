@@ -169,6 +169,22 @@ class AllocationManager:
                 if len(selected) == blocks_needed:
                     break
             allocated_indices = selected
+        elif strategy == 'scattered':
+            # Intentionally scatter blocks across available free indices with gaps to demonstrate fragmentation
+            available = [b.block_index for b in free_blocks]
+            stride = max(2, len(available) // max(1, blocks_needed * 2)) if len(available) >= blocks_needed * 2 else 2
+            selected = []
+            ptr = 0
+            while len(selected) < blocks_needed and ptr < len(available):
+                selected.append(available[ptr])
+                ptr += stride
+            # Fill remainder if stride reached end
+            for b_idx in available:
+                if len(selected) == blocks_needed:
+                    break
+                if b_idx not in selected:
+                    selected.append(b_idx)
+            allocated_indices = sorted(selected)
         else:
             allocated_indices = [b.block_index for b in free_blocks[:blocks_needed]]
 
@@ -266,6 +282,10 @@ class AllocationManager:
                 return res
             res = cls.allocate_linked(device_id, blocks_needed, strategy='best_fit')
             res['method'] = 'best_fit'
+            return res
+        elif method in ('scattered', 'scattered_linked'):
+            res = cls.allocate_linked(device_id, blocks_needed, strategy='scattered')
+            res['method'] = 'scattered'
             return res
         else:
             return cls.allocate_linked(device_id, blocks_needed)
